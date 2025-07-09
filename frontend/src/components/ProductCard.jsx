@@ -1,80 +1,148 @@
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+// frontend/src/components/ProductCard.jsx
 import {
   Box,
   Button,
   Heading,
-  HStack,
-  IconButton,
-  Image,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
-  Toast,
-  useColorModeValue,
-  useDisclosure,
+  Image,
+  IconButton,
   useToast,
   VStack,
+  HStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Input,
+  Textarea, // Import Textarea for description
+  useColorModeValue,
+  useDisclosure,
+  Flex,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { FaMinus, FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { useCartStore } from "../store/cart";
 import { useProductStore } from "../store/product";
-import { updateProduct } from "./../../../backend/controllers/product.controller";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
-  const [updatedProduct, setUpdatedProduct] = useState(product);
+  // Ensure product has a description property for initial state
+  const [updatedProduct, setUpdatedProduct] = useState({
+    ...product,
+    description: product.description || "", // Initialize description to empty string if null/undefined
+  });
+
   const textColor = useColorModeValue("gray.600", "gray.200");
   const bg = useColorModeValue("white", "gray.800");
 
+  const primaryButtonColorScheme = "blue";
+  const primaryButtonHoverBg = useColorModeValue("blue.600", "blue.400");
+
+  const updateButtonColorScheme = "purple";
+  const updateButtonHoverBg = useColorModeValue("purple.50", "purple.900");
+
+  const deleteIconColorScheme = "red";
+  const deleteIconHoverBg = useColorModeValue("red.50", "red.900");
+
+  const { cart, addToCart, increaseQuantity, decreaseQuantity } =
+    useCartStore();
   const { deleteProduct, updateProduct } = useProductStore();
   const toast = useToast();
+  const navigate = useNavigate();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleUpdateProduct = async (pid, updatedProduct) => {
-    const { success, message } = await updateProduct(pid, updatedProduct);
-    onClose();
-    if (!success) {
+  const productInCart = cart.find((item) => item._id === product._id);
+  const currentQuantityInCart = productInCart ? productInCart.quantity : 0;
+
+  useEffect(() => {
+    // Update product state for modal form if the original product changes
+    // Ensure description is also updated and defaults to empty string if not present
+    setUpdatedProduct({
+      ...product,
+      description: product.description || "",
+    });
+  }, [product]);
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    addToCart(product);
+    toast({
+      title: "Product Added",
+      description: `${product.name} has been added to the cart.`,
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
+  const handleIncrease = (e) => {
+    e.stopPropagation();
+    increaseQuantity(product._id);
+  };
+
+  const handleDecrease = (e) => {
+    e.stopPropagation();
+    decreaseQuantity(product._id);
+  };
+
+  const handleDeleteProduct = async (e, pid) => {
+    e.stopPropagation();
+    const { success, message } = await deleteProduct(pid);
+    if (success) {
       toast({
-        title: "Error",
+        title: "Success",
         description: message,
-        status: "error",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
     } else {
       toast({
-        title: "Success",
+        title: "Error",
         description: message,
-        status: "success",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
     }
   };
 
-  const handleDeleteProduct = async (pid) => {
-    const { success, message } = await deleteProduct(pid);
-    if (!success) {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        duration: 3000,
-        isCloseable: true,
-      });
-    } else {
+  const handleOpenUpdateModal = (e) => {
+    e.stopPropagation();
+    onOpen();
+  };
+
+  const handleUpdateProductSubmit = async () => {
+    const { success, message } = await updateProduct(
+      product._id,
+      updatedProduct
+    );
+    onClose();
+    if (success) {
       toast({
         title: "Success",
         description: message,
         status: "success",
         duration: 3000,
-        isCloseable: true,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
       });
     }
+  };
+
+  const handleCardClick = () => {
+    navigate(`/product/${product._id}`);
   };
 
   return (
@@ -85,6 +153,8 @@ const ProductCard = ({ product }) => {
       transition="all 0.3s"
       _hover={{ transform: "translateY(-5px)", shadow: "xl" }}
       bg={bg}
+      onClick={handleCardClick}
+      cursor="pointer"
     >
       <Image
         src={product.image}
@@ -98,17 +168,84 @@ const ProductCard = ({ product }) => {
           {product.name}
         </Heading>
         <Text fontWeight="bold" fontSize="xl" color={textColor} mb={4}>
-          ${product.price}
+          ${parseFloat(product.price).toFixed(2)}
         </Text>
-        <HStack spacing={2}>
-          <IconButton icon={<EditIcon />} onClick={onOpen} colorScheme="blue" />
+
+        {currentQuantityInCart === 0 ? (
+          <Button
+            onClick={handleAddToCart}
+            colorScheme={primaryButtonColorScheme}
+            w="full"
+            variant="solid"
+            _hover={{ bg: primaryButtonHoverBg, transform: "scale(1.01)" }}
+            transition="all 0.2s ease-in-out"
+          >
+            Add to Cart
+          </Button>
+        ) : (
+          <Box
+            mt={4}
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <IconButton
+              icon={<FaMinus />}
+              onClick={handleDecrease}
+              colorScheme="red"
+              variant="outline"
+              isRound
+              size="sm"
+              isDisabled={currentQuantityInCart === 1}
+              aria-label="Decrease quantity"
+              _hover={{
+                bg: useColorModeValue("red.50", "red.900"),
+                borderColor: useColorModeValue("red.400", "red.500"),
+              }}
+            />
+            <Text fontWeight="bold" color={textColor}>
+              {currentQuantityInCart}
+            </Text>
+            <IconButton
+              icon={<FaPlus />}
+              onClick={handleIncrease}
+              colorScheme="green"
+              variant="outline"
+              isRound
+              size="sm"
+              aria-label="Increase quantity"
+              _hover={{
+                bg: useColorModeValue("green.50", "green.900"),
+                borderColor: useColorModeValue("green.400", "green.500"),
+              }}
+            />
+          </Box>
+        )}
+
+        <HStack spacing={2} p={4}>
           <IconButton
-            icon={<DeleteIcon />}
-            onClick={() => handleDeleteProduct(product._id)}
-            colorScheme="red"
+            icon={<FaTrash />}
+            onClick={(e) => handleDeleteProduct(e, product._id)}
+            colorScheme={deleteIconColorScheme}
+            variant="ghost"
+            aria-label="Delete product"
+            _hover={{ bg: deleteIconHoverBg }}
+            transition="background 0.2s"
           />
+          <Button
+            leftIcon={<FaEdit />}
+            onClick={handleOpenUpdateModal}
+            colorScheme={updateButtonColorScheme}
+            variant="outline"
+            _hover={{ bg: updateButtonHoverBg }}
+            transition="background 0.2s"
+          >
+            Update Product
+          </Button>
         </HStack>
       </Box>
+
+      {/* --- Update Product Modal --- */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -132,10 +269,24 @@ const ProductCard = ({ product }) => {
                 onChange={(e) =>
                   setUpdatedProduct({
                     ...updatedProduct,
-                    price: e.target.value,
+                    price: parseFloat(e.target.value) || 0,
                   })
                 }
               />
+              {/* --- ADDED DESCRIPTION TEXTAREA HERE --- */}
+              <Textarea
+                placeholder="Product Description"
+                name="description"
+                value={updatedProduct.description}
+                onChange={(e) =>
+                  setUpdatedProduct({
+                    ...updatedProduct,
+                    description: e.target.value,
+                  })
+                }
+                rows={3} // Provide a default height for the textarea
+              />
+              {/* --- END ADDED DESCRIPTION TEXTAREA --- */}
               <Input
                 placeholder="Image URL"
                 name="image"
@@ -154,7 +305,7 @@ const ProductCard = ({ product }) => {
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={() => handleUpdateProduct(product._id, updatedProduct)}
+              onClick={handleUpdateProductSubmit}
             >
               Update
             </Button>

@@ -6,21 +6,24 @@ import {
   HStack,
   Button,
   Text,
-  useColorMode,
+  useColorMode, // <--- Keep useColorMode here
   useColorModeValue,
 } from "@chakra-ui/react";
-import { Link, Routes, Route } from "react-router-dom";
+import { Link } from "react-router-dom"; // Only Link is needed here
 import { PlusSquareIcon } from "@chakra-ui/icons";
-//import Navbar from "./components/Navbar";
-//import HomePage from "./pages/HomePage"; // Assuming you have a HomePage component
-//import CreatePage from "./pages/CreatePage"; // Assuming you have a CreatePage component
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
-//import { useProductStore } from "../store/product";
+import { FaStore } from "react-icons/fa";
 
-function App() {
-  const { colorMode, toggleColorMode } = useColorMode();
-  //const {products} = useProductStore;
+// <--- NEW: Import useCartStore for the openSidebar action
+import { useCartStore } from "../store/cart"; // Correct path from components/ to store/
+
+// This is the actual Navbar component
+function Navbar() {
+  // Renamed from 'App' to 'Navbar' for clarity
+  const { colorMode, toggleColorMode } = useColorMode(); // <--- Keep useColorMode here
+  const { openSidebar } = useCartStore(); // <--- NEW: Get openSidebar action
+
   return (
     <Container maxW={"1140px"} px={4}>
       <Flex
@@ -40,15 +43,26 @@ function App() {
           bgGradient={"linear(to-r, cyan.400, blue.500)"}
           bgClip={"text"}
         >
-          <Link to={"/"}>Ayan's CRUD Store 🛒</Link>
+          {/* The Link component containing the icon and text */}
+          <Link to={"/"}>
+            <FaStore style={{ marginRight: "8px" }} /> {/* The icon */}
+            🧪 Lumina Labs
+          </Link>
         </Text>
-
         <HStack spacing={2} alignItems={"center"}>
           <Link to={"/create"}>
             <Button>
               <PlusSquareIcon fontSize={20} />
             </Button>
           </Link>
+
+          {/* NEW: Cart Button that opens the sidebar */}
+          <Button onClick={openSidebar}>
+            {" "}
+            {/* No comment issue here, inside JSX directly */}
+            Cart
+          </Button>
+
           <Button onClick={toggleColorMode}>
             {colorMode === "light" ? <IoMoon /> : <LuSun />}
           </Button>
@@ -58,4 +72,4 @@ function App() {
   );
 }
 
-export default App;
+export default Navbar; // Export Navbar

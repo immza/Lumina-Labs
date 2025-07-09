@@ -2,9 +2,7 @@ import { Container, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { FaRocket } from "react-icons/fa";
 import { useProductStore } from "../store/product";
-//import ProductCard from "../components/ProductCard.js";
 import ProductCard from "../components/ProductCard";
-import { Link } from "react-router-dom";
 import { FaRegSadCry } from "react-icons/fa";
 
 const HomePage = () => {
@@ -13,7 +11,6 @@ const HomePage = () => {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-  console.log("products: ", products);
 
   return (
     <Container maxW="container.xl" py={12}>
@@ -27,7 +24,6 @@ const HomePage = () => {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span>Current Products</span>
-            <FaRocket color="cyan" />
           </div>
         </Text>
         <SimpleGrid
@@ -39,9 +35,11 @@ const HomePage = () => {
           spacing={10}
           w={"full"}
         >
-          {products.map((product) => {
-            return <ProductCard key={product._id} product={product} />;
-          })}
+          {products.map((product) => (
+            <div key={product._id}>
+              <ProductCard product={product} />
+            </div>
+          ))}
         </SimpleGrid>
         {products.length === 0 && (
           <Text
@@ -49,17 +47,12 @@ const HomePage = () => {
             textAlign={"center"}
             fontWeight="bold"
             color="gray.500"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
             No Products Found
-            <Link to={"/create"}>
-              <Text
-                as="span"
-                color="blue.500"
-                _hover={{ textDecoration: "underline" }}
-              >
-                Create a product <FaRegSadCry />
-              </Text>
-            </Link>
+            <FaRegSadCry style={{ marginLeft: "8px" }} />
           </Text>
         )}
       </VStack>

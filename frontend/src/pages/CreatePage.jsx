@@ -10,14 +10,17 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useProductStore } from "../store/product";
+
 const CreatePage = () => {
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
     image: "",
+    description: "", // Add description state
   });
   const toast = useToast();
   const { createProduct } = useProductStore();
+
   const handleAddProduct = async () => {
     const { success, message } = await createProduct(newProduct);
     if (!success) {
@@ -35,9 +38,6 @@ const CreatePage = () => {
         isCloseable: true,
       });
     }
-
-    //console.log("Success: ", success);
-    //console.log("Message:", message);
   };
 
   return (
@@ -76,6 +76,14 @@ const CreatePage = () => {
               value={newProduct.image}
               onChange={(e) =>
                 setNewProduct({ ...newProduct, image: e.target.value })
+              }
+            />
+            <Input
+              placeholder="Description" // Add description input
+              name="description"
+              value={newProduct.description}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, description: e.target.value })
               }
             />
             <Button colorScheme="blue" onClick={handleAddProduct} w="full">
