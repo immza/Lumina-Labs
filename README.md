@@ -42,14 +42,14 @@ Your project should now be running locally at http://localhost:5000
 **Screenshots**
 
 ### Homepage & Product Listings
-![Lumina Labs Homepage View 1](image/lumina1.png)
-![Lumina Labs Homepage View 2](image/lumina2.png)
-![Lumina Labs Homepage View 3](image/lumina3.png)
+![Lumina Labs Homepage View 1](images/lumina1.png)
+![Lumina Labs Homepage View 2](images/lumina2.png)
+![Lumina Labs Homepage View 3](images/lumina3.png)
 
-![Main Shopping Cart Page with Items](image/luminacart.png)
-![Checkout Summary Card Example](image/luminacartcard.png)
-![Empty Shopping Cart Page](image/cartempty.png)
+![Main Shopping Cart Page with Items](images/luminacart.png)
+![Checkout Summary Card Example](images/luminacartcard.png)
+![Empty Shopping Cart Page](images/cartempty.png)
 
-![Create New Product Page](image/createlumina.png)
-![Update Existing Product Page](image/updatelumina.png)
-![Direct Product Quantity Management from Homepage UI](image/editluminahome.png)
+![Create New Product Page](images/createlumina.png)
+![Update Existing Product Page](images/updatelumina.png)
+![Direct Product Quantity Management from Homepage UI](images/editluminahome.png)
