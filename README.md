@@ -40,8 +40,7 @@ npm run start
 Your project should now be running locally at http://localhost:5000
 
 **Screenshots**
-
-### Homepage & Product Listings
+![Direct Product Quantity Management from Homepage UI](images/editluminahome.png)
 ![Lumina Labs Homepage View 1](images/lumina1.png)
 ![Lumina Labs Homepage View 2](images/lumina2.png)
 ![Lumina Labs Homepage View 3](images/lumina3.png)
@@ -52,4 +51,4 @@ Your project should now be running locally at http://localhost:5000
 
 ![Create New Product Page](images/createlumina.png)
 ![Update Existing Product Page](images/updatelumina.png)
-![Direct Product Quantity Management from Homepage UI](images/editluminahome.png)
+
