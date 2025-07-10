@@ -4,6 +4,8 @@ Welcome to Lumina Labs — A cutting-edge platform built with ReactJS, NodeJS, M
 
 **Check out the live demo:** https://lumina-labs.vercel.app/
 
+Link to the video demo: https://www.youtube.com/watch?v=EMuIWBUp0jU
+
 **🛠 Tech Stack**
 Frontend: ReactJS, Chakra UI, Zustand (for state management)
 
